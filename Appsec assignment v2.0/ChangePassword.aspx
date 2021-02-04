@@ -37,7 +37,8 @@
 
         </div>
           <asp:Button ID="btnchangepass" runat="server" Text="Change Password" 
-                        onclick="btnchangepass_Click" />
+                        onclick="btnchangepass_Click" CausesValidation="true"/>
+        <asp:Button ID="Login" runat="server" Text="Login" OnClick="Login_Click" CausesValidation="false"/>
         <asp:Label ID="lblmsg" runat="server"></asp:Label>
     </form>
 </body>

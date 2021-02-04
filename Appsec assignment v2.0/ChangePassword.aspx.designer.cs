@@ -105,6 +105,15 @@ namespace Appsec_assignment_v2._0
         protected global::System.Web.UI.WebControls.Button btnchangepass;
 
         /// <summary>
+        /// Login control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Login;
+
+        /// <summary>
         /// lblmsg control.
         /// </summary>
         /// <remarks>

@@ -13,35 +13,38 @@ namespace Appsec_assignment_v2._0
 {
     public partial class ChangePassword : System.Web.UI.Page
     {
-        string MYDBConnectionString =System.Configuration.ConfigurationManager.ConnectionStrings["MYDBConnection"].ConnectionString;
+        string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["MYDBConnection"].ConnectionString;
         static string finalHash;
         static string salt;
         byte[] Key;
         byte[] IV;
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["StatusMessage"] != null){
+            if (Session["StatusMessage"] != null) {
                 lblmsg.Text = Session["StatusMessage"].ToString();
             }
 
 
         }
+
+
         protected void btnchangepass_Click(object sender, EventArgs e)
-        {   
+        {
             //decrypt
-            string pwd = txtcurrentpass.Text.ToString().Trim();
+            string pwd = txtconfirmpass.Text.ToString().Trim();
             string userid = tb_email.Text.ToString().Trim();
             var newdate = DateTime.Now;
             string olddate = forceChangePassword(userid);
             var comparedate = DateTime.Parse(olddate);
             var yes = ((comparedate - newdate).TotalMinutes < 15);
-            if ((newdate-comparedate).TotalMinutes < 5)
+            if ((newdate - comparedate).TotalMinutes < 5)
             {
                 lblmsg.Text = "You just recently changed your password";
                 return;
 
             }
-            else {
+            else
+            {
                 SHA512Managed hashing = new SHA512Managed();
                 string dbHash = getDBHash(userid);
                 string dbSalt = getDBSalt(userid);
@@ -75,12 +78,22 @@ namespace Appsec_assignment_v2._0
 
 
                     }
+                    else
+                    {
+
+                        lblmsg.Text = "Userid or password is not valid. Please try again.";
+
+
+
+
+
+                    }
 
 
                 }
             }
-            
-            }
+        }
+        
 
         protected string getDBHash(string userid)
         {
@@ -213,5 +226,11 @@ namespace Appsec_assignment_v2._0
             finally { connection.Close(); }
             return c;
         }
+
+        protected void Login_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Login.aspx");
+        }
     }
+
 }

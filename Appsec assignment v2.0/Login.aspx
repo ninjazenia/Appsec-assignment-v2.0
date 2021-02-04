@@ -24,7 +24,7 @@
               <asp:Label ID="lbl_gscore" runat="server" Text="" style ="visibility:hidden"></asp:Label>
             <p><asp:Button ID="Button1" runat="server" Text="Login" Onclick="LoginMe"  />
                 <asp:Button ID="Button2" runat="server" Text="Sign Up" OnClick="SignUpMe" />
-                <asp:Button ID="Button3" runat="server" Text="Forget Password" OnClick="Forget"/>
+                <asp:Button ID="Button3" runat="server" Text="ChangePassword" OnClick="Forget"/>
             </p>
                 
             </fieldset>

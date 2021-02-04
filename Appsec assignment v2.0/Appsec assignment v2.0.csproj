@@ -129,6 +129,7 @@
     <Content Include="ChangePassword.aspx" />
     <Content Include="CustomError\HTTP404.html" />
     <Content Include="CustomError\HTTP403.html" />
+    <Content Include="CustomError\GenericError.html" />
     <Content Include="Global.asax" />
     <Content Include="Home.aspx" />
     <Content Include="Login.aspx" />

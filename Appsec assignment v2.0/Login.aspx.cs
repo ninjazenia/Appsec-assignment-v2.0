@@ -79,105 +79,121 @@ namespace Appsec_assignment_v2._0
                     }
                     else
                     {
-                        if (checkAccountLockout(userid) == "True")
+                        var newdate = DateTime.Now;
+                        string olddate = forceChangePassword(userid);
+                        var comparedate = DateTime.Parse(olddate);
+
+                        if ((newdate - comparedate).TotalMinutes > 1 && checkAccountLockout(userid) == "True")
                         {
-                            lblMessage.Text = "Account is locked out.";
-                            lblMessage.ForeColor = Color.Red;
+                            ResetAccountLocked(userid);
+
                         }
+
+                        
                         else
                         {
-                            var newdate = DateTime.Now;
-                            string olddate = forceChangePassword(userid);
-                            var comparedate = DateTime.Parse(olddate);
-                            var yes = ((comparedate - newdate).TotalMinutes < 15);
-                            Console.WriteLine(olddate);
-                            if ((newdate - comparedate).TotalMinutes > 15)
+                            if (checkAccountLockout(userid) == "True")
                             {
-                                var statusmsg = "Change your password";
-                                Session["StatusMessage"] = statusmsg;
-                                Response.Redirect("ChangePassword.aspx", false);
-                                
+                                lblMessage.Text = "Account is locked out.";
+                                lblMessage.ForeColor = Color.Red;
                             }
 
-                        //    if (){ }
-                            
-                            else {
-                                SHA512Managed hashing = new SHA512Managed();
-                                string dbHash = getDBHash(userid);
-                                string dbSalt = getDBSalt(userid);
-                                try
+
+
+                            else
+                            {
+                                var yes = ((comparedate - newdate).TotalMinutes < 15);
+                                Console.WriteLine(olddate);
+                                if ((newdate - comparedate).TotalMinutes > 15)
                                 {
-                                    if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
+                                    var statusmsg = "Change your password";
+                                    Session["StatusMessage"] = statusmsg;
+                                    Response.Redirect("ChangePassword.aspx", false);
+
+                                }
+
+                                //    if (){ }
+
+                                else
+                                {
+                                    SHA512Managed hashing = new SHA512Managed();
+                                    string dbHash = getDBHash(userid);
+                                    string dbSalt = getDBSalt(userid);
+                                    try
                                     {
-                                        string pwdWithSalt = pwd + dbSalt;
-                                        byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
-                                        string userHash = Convert.ToBase64String(hashWithSalt);
-                                        if (userHash.Equals(dbHash))
+                                        if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
                                         {
-                                            Session["UserID"] = userid;
-                                            Session["Time"] = yes;
-                                            Session["LoggedIn"] = tb_email.Text.Trim();
-                                            string guid = Guid.NewGuid().ToString();
-                                            Session["AuthToken"] = guid;
-                                            Response.Cookies.Add(new HttpCookie("AuthToken", guid));
-                                            Response.Redirect("Home.aspx?Email=" + HttpUtility.UrlEncode(userid), false);
-                                        }
-
-
-                                        else
-                                        {
-
-                                            if (Session["LogInAttempt" + userid] == null)
+                                            string pwdWithSalt = pwd + dbSalt;
+                                            byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
+                                            string userHash = Convert.ToBase64String(hashWithSalt);
+                                            if (userHash.Equals(dbHash))
                                             {
-                                                Session["LogInAttempt" + userid] = 2;
-                                                int intAttempt = (int)Session["LogInAttempt" + userid];
-                                                lblMessage.Text = "Email or password is not valid. Please try again. You have " + intAttempt + " left.";
-                                                lblMessage.ForeColor = Color.Red;
-
-
+                                                Session["UserID"] = userid;
+                                                Session["Time"] = yes;
+                                                Session["LoggedIn"] = tb_email.Text.Trim();
+                                                string guid = Guid.NewGuid().ToString();
+                                                Session["AuthToken"] = guid;
+                                                Response.Cookies.Add(new HttpCookie("AuthToken", guid));
+                                                Response.Redirect("Home.aspx?Email=" + HttpUtility.UrlEncode(userid), false);
                                             }
+
+
                                             else
                                             {
-                                                int intAttempt = (int)Session["LogInAttempt" + userid];
-                                                intAttempt -= 1;
-                                                Session["LogInAttempt" + userid] = intAttempt;
-                                                lblMessage.Text = "Email or password is not valid. Please try again. You have " + intAttempt + " left.";
-                                                lblMessage.ForeColor = Color.Red;
-                                                if (intAttempt < 0)
+
+                                                if (Session["LogInAttempt" + userid] == null)
                                                 {
-                                                    SqlConnection connection = new SqlConnection(MYDBConnectionString);
-                                                    string sql = "UPDATE Account SET accountLockout = 1 WHERE Email=@Email";
-                                                    SqlCommand command = new SqlCommand(sql, connection);
-                                                    command.Parameters.AddWithValue("@Email", userid);
-                                                    try
-                                                    {
-                                                        connection.Open();
-                                                        SqlDataReader reader = command.ExecuteReader();
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-                                                        throw new Exception(ex.ToString());
-                                                    }
-                                                    finally { connection.Close(); }
-                                                    lblMessage.Text = "This account has been locked.";
+                                                    Session["LogInAttempt" + userid] = 2;
+                                                    int intAttempt = (int)Session["LogInAttempt" + userid];
+                                                    lblMessage.Text = "Email or password is not valid. Please try again. You have " + intAttempt + " left.";
                                                     lblMessage.ForeColor = Color.Red;
+
+
                                                 }
                                                 else
                                                 {
+                                                    int intAttempt = (int)Session["LogInAttempt" + userid];
+                                                    intAttempt -= 1;
+                                                    Session["LogInAttempt" + userid] = intAttempt;
                                                     lblMessage.Text = "Email or password is not valid. Please try again. You have " + intAttempt + " left.";
                                                     lblMessage.ForeColor = Color.Red;
+                                                    if (intAttempt < 0)
+                                                    {
+                                                        SqlConnection connection = new SqlConnection(MYDBConnectionString);
+                                                        string sql = "UPDATE Account SET accountLockout = 1 WHERE Email=@Email";
+                                                        SqlCommand command = new SqlCommand(sql, connection);
+                                                        command.Parameters.AddWithValue("@Email", userid);
+                                                        try
+                                                        {
+                                                            connection.Open();
+                                                            SqlDataReader reader = command.ExecuteReader();
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            throw new Exception(ex.ToString());
+                                                        }
+                                                        finally { connection.Close(); }
+                                                        lblMessage.Text = "This account has been locked.";
+                                                        lblMessage.ForeColor = Color.Red;
+                                                    }
+                                                    else
+                                                    {
+                                                        lblMessage.Text = "Email or password is not valid. Please try again. You have " + intAttempt + " left.";
+                                                        lblMessage.ForeColor = Color.Red;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new Exception(ex.ToString());
-                                }
-                                finally { }
+                                    catch (Exception ex)
+                                    {
+                                        throw new Exception(ex.ToString());
+                                    }
+                                    finally { }
 
+                                }
                             }
+                           
                         }
                     }
                 }
@@ -351,6 +367,29 @@ namespace Appsec_assignment_v2._0
             finally { connection.Close(); }
             return c;
         }
+        protected string ResetAccountLocked(string userid)
+        {
+            string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["MYDBConnection"].ConnectionString;
+            string c = null;
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "UPDATE Account SET accountLockout = 0 WHERE Email=@Email";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@Email", userid);
+            try
+            {
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+            }
+                catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return c;
+
+        }
+    
+
 
 
             protected void SignUpMe(object sender, EventArgs e)
