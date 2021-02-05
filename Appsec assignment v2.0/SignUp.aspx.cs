@@ -10,7 +10,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-
+using System.Net;
+using System.IO;
+using System.Web.Script.Serialization;
+using static Appsec_assignment_v2._0.Login;
 
 namespace Appsec_assignment_v2._0
 {
@@ -67,7 +70,7 @@ namespace Appsec_assignment_v2._0
         {
             string pwd = tb_password.Text.ToString().Trim(); ;
             int scores = checkPassword(tb_password.Text);
-            
+
             string status = "";
             switch (scores)
             {
@@ -95,30 +98,31 @@ namespace Appsec_assignment_v2._0
                 tb_pwdchecker.ForeColor = Color.Red;
                 return;
             }
-            if (tb_creditcard.Text.Length != 16)
-            {
 
-            }
             else
             {
-                tb_pwdchecker.ForeColor = Color.Green;
-                RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-                byte[] saltByte = new byte[8];
-                //Fills array of bytes with a cryptographically strong sequence of random values.
-                rng.GetBytes(saltByte);
-                salt = Convert.ToBase64String(saltByte);
-                SHA512Managed hashing = new SHA512Managed();
-                string pwdWithSalt = pwd + salt;
-                byte[] plainHash = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwd));
-                byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
-                finalHash = Convert.ToBase64String(hashWithSalt);
-                RijndaelManaged cipher = new RijndaelManaged();
-                cipher.GenerateKey();
-                Key = cipher.Key;
-                IV = cipher.IV;
-                lockOut = false;
+                if (ValidateCaptcha() )
+                {
+                    tb_pwdchecker.ForeColor = Color.Green;
+                    RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                    byte[] saltByte = new byte[8];
+                    //Fills array of bytes with a cryptographically strong sequence of random values.
+                    rng.GetBytes(saltByte);
+                    salt = Convert.ToBase64String(saltByte);
+                    SHA512Managed hashing = new SHA512Managed();
+                    string pwdWithSalt = pwd + salt;
+                    byte[] plainHash = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwd));
+                    byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
+                    finalHash = Convert.ToBase64String(hashWithSalt);
+                    RijndaelManaged cipher = new RijndaelManaged();
+                    cipher.GenerateKey();
+                    Key = cipher.Key;
+                    IV = cipher.IV;
+                    lockOut = false;
 
-                createAccount();
+                    createAccount();
+                }
+
             }
 
 
@@ -164,7 +168,7 @@ namespace Appsec_assignment_v2._0
                 throw new Exception(ex.ToString());
             }
         }
-    
+
         protected byte[] encryptData(string data)
         {
             byte[] cipherText = null;
@@ -186,6 +190,62 @@ namespace Appsec_assignment_v2._0
             finally { }
             return cipherText;
         }
+        public bool ValidateCaptcha()
+        {
+            bool result = true;
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create("https://www.google.com/recaptcha/api/siteverify?secret=6Lel5C0aAAAAAL2ZO3Q1qlX4Pyoo7F24Pl2AXSB2 &response=" + captchaResponse);
+            Console.WriteLine("This is C#");
+            try
+            {
+                using (WebResponse wResponse = req.GetResponse())
+                {
+                    using (StreamReader readStream = new StreamReader(wResponse.GetResponseStream()))
+                    {
+                        string jsonResponse = readStream.ReadToEnd();
+                        lbl_gscore.Text = jsonResponse.ToString();
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+                        MyObject jsonObject = js.Deserialize<MyObject>(jsonResponse);
+                        result = Convert.ToBoolean(jsonObject.success);
 
+                    }
+                }
+                return result;
+            }
+            catch (WebException ex)
+            {
+                throw ex;
+            }
+
+        }
+    //private Boolean uniqueEmail()
+    //{
+    //    Boolean valid = true;
+    //    DataSet dset = new DataSet();
+    //    DataSet profileDset = new DataSet();
+    //    SqlConnection conn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["MYDBConnection"].ToString());
+    //    using (conn)
+    //    {
+    //        conn.Open();
+    //        SqlDataAdapter adapter = new SqlDataAdapter();
+
+    //        SqlCommand cmd = new SqlCommand("SELECT Id, Email, FirstName, LastName, CreditCard, PasswordHash, PasswordSalt, DOB FROM Account WHERE lower(Email) = @Email", conn);
+    //        cmd.Parameters.AddWithValue("@Email", tb_email.Text.ToLower());
+    //        cmd.CommandType = CommandType.Text;
+    //        adapter.SelectCommand = cmd;
+    //        adapter.Fill(dset);
+
+    //    }
+
+    //    if (dset.Tables[0].Rows.Count > 0)
+    //    {
+
+    //        lbl_emailchecker.Text = "Email is already a registered account!";
+    //        valid = false;
+               
+    //    }
+    //    else { lbl_emailchecker.Text = ""; }
+    //    return valid;
+    //}
     }
 }

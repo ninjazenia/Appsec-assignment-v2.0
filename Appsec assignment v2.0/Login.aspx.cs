@@ -63,8 +63,8 @@ namespace Appsec_assignment_v2._0
         {
             if (ValidateCaptcha())
             {
-                string pwd = tb_pwd.Text.ToString().Trim();
-                string userid = tb_email.Text.ToString().Trim();
+                string pwd = HttpUtility.HtmlEncode(tb_pwd.Text).ToString();
+                string userid = HttpUtility.HtmlEncode(tb_email.Text).ToString().Trim();
                 if (userid == "" || pwd == "")
                 {
                     lblMessage.Text = "Please enter your credentials.";
@@ -102,7 +102,7 @@ namespace Appsec_assignment_v2._0
 
                             else
                             {
-                                var yes = ((comparedate - newdate).TotalMinutes < 15);
+                                
                                 Console.WriteLine(olddate);
                                 if ((newdate - comparedate).TotalMinutes > 15)
                                 {
@@ -129,7 +129,7 @@ namespace Appsec_assignment_v2._0
                                             if (userHash.Equals(dbHash))
                                             {
                                                 Session["UserID"] = userid;
-                                                Session["Time"] = yes;
+                                               
                                                 Session["LoggedIn"] = tb_email.Text.Trim();
                                                 string guid = Guid.NewGuid().ToString();
                                                 Session["AuthToken"] = guid;

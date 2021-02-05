@@ -37,7 +37,7 @@ namespace Appsec_assignment_v2._0
                     lblMessage.ForeColor = System.Drawing.Color.Green;
                     displayUserProfile(userID);
                     btnLogout.Visible = true;
-                    user.Text = Session["Time"].ToString();
+                   
                 }
 
             }

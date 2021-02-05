@@ -96,13 +96,13 @@ namespace Appsec_assignment_v2._0
         protected global::System.Web.UI.WebControls.TextBox tb_creditcard;
 
         /// <summary>
-        /// RegularExpressionValidator1 control.
+        /// creditcard1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator RegularExpressionValidator1;
+        protected global::System.Web.UI.WebControls.Label creditcard1;
 
         /// <summary>
         /// email control.
@@ -130,6 +130,15 @@ namespace Appsec_assignment_v2._0
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RegularExpressionValidator regexEmailValid;
+
+        /// <summary>
+        /// lbl_emailchecker control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_emailchecker;
 
         /// <summary>
         /// password control.
@@ -184,6 +193,15 @@ namespace Appsec_assignment_v2._0
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label tb_pwdchecker;
+
+        /// <summary>
+        /// lbl_gscore control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_gscore;
 
         /// <summary>
         /// checkpass control.

@@ -44,6 +44,15 @@
 
 
         }
+        function validatecreditcard() {
+            var str = document.getElementById('<%=tb_creditcard.ClientID%>').value;
+            if (str.search(/[0-9]{16}/) == -1){
+                document.getElementById("creditcard1").innerHTML = "Invalid credit card";
+                document.getElementById("creditcard1").style.color = "Red";
+                return false;
+            }
+            
+        }
 
     </script>
 </head>
@@ -63,14 +72,16 @@
         ControlToValidate="tb_lastname"></asp:RequiredFieldValidator>
             <br />
             <asp:Label ID="creditcard" runat="server" >credit card:</asp:Label>
-            <asp:TextBox ID="tb_creditcard" runat="server" width ="200px" ></asp:TextBox>
-            <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ErrorMessage="invalid creditcard"  ControlToValidate="tb_creditcard" ValidationExpression="^[0-9]{16}$"></asp:RegularExpressionValidator>
+            <asp:TextBox ID="tb_creditcard" runat="server" width ="200px" onkeyup="javascript:validatecreditcard()"></asp:TextBox>
+            <asp:Label ID="creditcard1" runat="server" width ="200px" ></asp:Label>
+           
 
 
             <br />
             <asp:Label ID="email" runat="server" >email</asp:Label>
             <asp:TextBox ID="tb_email" runat="server" width ="200px" TextMode="Email"></asp:TextBox>
             <asp:RegularExpressionValidator ID="regexEmailValid" runat="server" ValidationExpression="\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ControlToValidate="tb_email" ErrorMessage="Invalid Email Format"></asp:RegularExpressionValidator>
+             <asp:Label ID="lbl_emailchecker" runat="server" >yes</asp:Label>
             <br />
             <asp:Label ID="password" runat="server" >password</asp:Label>
             <asp:TextBox ID="tb_password" runat="server" width ="200px" onkeyup="javascript:validate()" TextMode="Password"></asp:TextBox>
@@ -86,11 +97,22 @@
             <br />   
             <asp:Label ID="tb_pwdchecker" runat="server" Text="Label">message</asp:Label>
             <br />
+            <asp:Label ID="lbl_gscore" runat="server" Text="" style ="visibility:hidden"></asp:Label>
+            <br />
             <asp:Button ID="checkpass" runat="server" Text="register" OnClick="checkpass_Click" />
+            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
             
 
             
         </div>
     </form>
+    <script>
+        grecaptcha.ready(function () {
+            grecaptcha.execute('6Lel5C0aAAAAAMt82dZ8Zppfz0NuDfoKDUTYXEis', { action: 'Login' }).then(function (token) {
+                document.getElementById("g-recaptcha-response").value = token;
+            });
+        });
+    </script>
 </body>
+        
 </html>
